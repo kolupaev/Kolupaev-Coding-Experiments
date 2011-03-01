@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacTest.cs" />
+    <Compile Include="ManualTest.cs" />
     <Compile Include="NinjectTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

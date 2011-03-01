@@ -5,9 +5,27 @@ namespace IocPerfTest
 {
     public class AutofacTest : IIocUnnderTest
     {
-        private ContainerBuilder _builder;
+        class Resolver : IResolver
+        {
+            private readonly ILifetimeScope _scope;
+
+            public Resolver(ILifetimeScope scope)
+            {
+                _scope = scope;
+            }
+
+            public ILifetimeScope Scope
+            {
+                get { return _scope; }
+            }
+
+            public void Resolve<T>()
+            {
+                _scope.Resolve<T>();
+            }
+        }
+        private readonly ContainerBuilder _builder;
         private IContainer _container;
-        private ILifetimeScope _scope;
 
         public AutofacTest()
         {
@@ -40,19 +58,14 @@ namespace IocPerfTest
             _container = _builder.Build();
         }
 
-        public void StartScope()
+        public IResolver StartScope()
         {
-            _scope = _container.BeginLifetimeScope();
+            return new Resolver(_container.BeginLifetimeScope());
         }
 
-        public void EndScope()
+        public void EndScope(IResolver r)
         {
-            _scope.Dispose();
-        }
-
-        public void Resolve<T>()
-        {
-            _scope.Resolve<T>();
+            ((Resolver)r).Scope.Dispose();
         }
     }
 }

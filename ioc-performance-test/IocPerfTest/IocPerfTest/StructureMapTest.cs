@@ -4,9 +4,11 @@ using StructureMap.Pipeline;
 
 namespace IocPerfTest
 {
-    public class StructureMapTest : IIocUnnderTest{
+    public class StructureMapTest : IIocUnnderTest, IResolver
+    {
         
         public class Lifecycle : ILifecycle{
+            [ThreadStatic]
             private MainObjectCache _cache;
 
             public void New()
@@ -71,14 +73,17 @@ namespace IocPerfTest
             _container = new Container(_config);
         }
 
-        public void StartScope()
+        IResolver IIocUnnderTest.StartScope()
         {
             _lifecycle.New();
+            return this;
         }
 
-        public void EndScope()
+        public void EndScope(IResolver scope)
         {
         }
+
+        
 
         public void Resolve<T>()
         {

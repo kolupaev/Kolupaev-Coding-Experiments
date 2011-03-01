@@ -3,9 +3,10 @@ using Ninject;
 
 namespace IocPerfTest
 {
-    public class NinjectTest : IIocUnnderTest
+    public class NinjectTest : IIocUnnderTest, IResolver
     {
         private readonly StandardKernel _container;
+        [ThreadStatic]
         private object _scope;
 
         public string Name
@@ -38,15 +39,17 @@ namespace IocPerfTest
             
         }
 
-        public void StartScope()
+        public IResolver StartScope()
         {
             _scope = new object();
+            return this;
         }
 
-        public void EndScope()
+        public void EndScope(IResolver scope)
         {
-            _scope = null;
+            
         }
+
 
         public void Resolve<T>()
         {

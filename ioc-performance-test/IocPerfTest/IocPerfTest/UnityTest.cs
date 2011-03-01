@@ -4,11 +4,10 @@ using Microsoft.Practices.Unity;
 
 namespace IocPerfTest
 {
-    public class UnityTest : IIocUnnderTest
+    public class UnityTest : IIocUnnderTest, IResolver
     {
+       
         private UnityContainer _container;
-        private List<Type> _perScope = new List<Type>();
-        private IUnityContainer _child;
 
         public UnityTest()
         {
@@ -32,30 +31,25 @@ namespace IocPerfTest
 
         public void RegisterPerScope<T>()
         {
-            _perScope.Add(typeof(T));
+            _container.RegisterType<T>(new PerThreadLifetimeManager());
         }
 
         public void Buildup()
         {
         }
 
-        public void StartScope()
+        IResolver IIocUnnderTest.StartScope()
         {
-            _child = _container.CreateChildContainer();
-            foreach (var type in _perScope)
-            {
-                _child.RegisterType(type, new ContainerControlledLifetimeManager());
-            }
+            return this;
         }
 
-        public void EndScope()
+        public void EndScope(IResolver scope)
         {
-            _child.Dispose();
         }
 
         public void Resolve<T>()
         {
-            _child.Resolve<T>();
+            _container.Resolve<T>();
         }
     }
 }
